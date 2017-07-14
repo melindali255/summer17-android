@@ -17,7 +17,7 @@ public class Farmer {
     private Vector3 velocity;
     private Rectangle boundsFarmer;
     private Vector2 posFarmer;
-    private int movement = 200;
+    private int movement = 250;
 
     public Farmer(int x, int y){
         farmer = new Texture("farmerOnATractor.png");
@@ -25,7 +25,7 @@ public class Farmer {
         posFarmer = new Vector2(0,45);
         velocity = new Vector3(0,0,0);
         position = new Vector3(posFarmer.x,posFarmer.y,0);
-        boundsFarmer = new Rectangle(posFarmer.x,posFarmer.y,70,45);
+        boundsFarmer = new Rectangle(posFarmer.x,posFarmer.y, farmer.getHeight(), farmer.getWidth());
 
     }
 

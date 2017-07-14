@@ -39,6 +39,7 @@ public class Level2 extends State{
     private static final int ground_width = 800;
     private static final int MUD_SPACING = 250;
     private static final int MUD_WIDTH = 30;
+    long startTime;
 
 
     public Level2(GameStateManager gsm) {
@@ -62,12 +63,15 @@ public class Level2 extends State{
         bgPos1 = new Vector2(cam.position.x - cam.viewportWidth/2,0);
         bgPos2 = new Vector2(background.getWidth()+bgPos1.x,0);
         bgPos3 = new Vector2(background.getWidth()+bgPos2.x,0);
+        startTime = System.currentTimeMillis();
     }
 
     @Override
     protected void handleInput() {
-        if (Gdx.input.justTouched()){
+        if(sheep.getPosition().y == 60) {
+        if (Gdx.input.justTouched()) {
             sheep.jump();
+        }
         }
     }
 
@@ -89,19 +93,37 @@ public class Level2 extends State{
         updateBg();
         updateGround();
         updatePoops();
-        collisionCheck2();
+        collisionCheck();
         timerCheck(dt);
-        changeLevels();
         cam.update();
-
+        if (((System.currentTimeMillis() - startTime) > 30000 & farmer.collides(sheep.getBounds1()) == false)){
+            gsm.set(new Level3(gsm));
+        }
     }
 
-    public void collisionCheck2() {
+    public void collisionCheck() {
+        if (farmer.collides(sheep.getBounds1())) {
+            sheep.getSheepDead();
+            sheep.sheepDied();
+            farmer.killedSheep();
+        }
         if (mud.collides(sheep.getBounds1())) {
             sheep.reduceSpd();
             sheep.startTimer();
             System.out.println(sheep.getBounds1());
             System.out.println(mud.getBoundsMud());
+        }
+        if (barrel.collides(sheep.getBounds1())) {
+            sheep.reduceSpd();
+            sheep.startTimer();
+        }
+        if (cherry.collides(sheep.getBounds1())) {
+            sheep.increaseSpd();
+            sheep.startTimer();
+        }
+        if (mushroom.collides(sheep.getBounds1())) {
+            sheep.goBackwards();
+            sheep.startTimer();
         }
     }
 
@@ -138,13 +160,6 @@ public class Level2 extends State{
         }
         if(groundPos2.x+ground.getWidth() <= cam.position.x-cam.viewportWidth/2){
             groundPos2.add(2*ground.getWidth(),0);
-        }
-
-    }
-
-    public void changeLevels(){
-        if (sheep.getPosition().x > 3000) {
-            gsm.set(new Level4(gsm));
         }
     }
 

@@ -34,6 +34,7 @@ public class Level3 extends State {
     private Obstacle spikes;
     private static final int hills_width = 1024;
     private static final int ground_width = 1024;
+    long startTime;
 
     public Level3(GameStateManager gsm) {
         super(gsm);
@@ -60,6 +61,7 @@ public class Level3 extends State {
         spikesTexture = new Texture("SPIKES2.0.18.png");
         spikes = new Obstacle(spikesTexture, 1700, 50, 2, 0.5f);
         carrotIsTouched = false;
+        startTime = System.currentTimeMillis();
     }
 
     @Override
@@ -93,6 +95,9 @@ public class Level3 extends State {
         timerCheck(dt);
         collisionCheck();
         cam.update();
+        if (((System.currentTimeMillis() - startTime) > 30000 & farmer.collides(sheep.getBounds1()) == false)){
+            gsm.set(new Level4(gsm));
+        }
     }
 
     public void updateGround() {
@@ -167,6 +172,8 @@ public class Level3 extends State {
     public void collisionCheck() {
         if (farmer.collides(sheep.getBounds1())) {
             sheep.getSheepDead();
+            sheep.sheepDied();
+            farmer.killedSheep();
         }
         if (mud.collides(sheep.getBounds1())) {
             sheep.reduceSpd();

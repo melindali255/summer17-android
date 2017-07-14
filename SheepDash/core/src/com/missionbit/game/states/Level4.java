@@ -98,7 +98,6 @@ public class Level4 extends State {
         apple.update(dt);
         //updatePoops();
         collisionCheck();
-        changeLevels();
         updateRed();
         updateGreen();
         updateApple();
@@ -202,7 +201,7 @@ public class Level4 extends State {
             sheep.sheepDied();
             farmer.killedSheep();
         }
-        if (poop.collides(sheep.getBounds1())){
+        if (poop.collides(sheep.getBounds1())) {
             sheep.reduceSpd();
             sheep.startTimer();
         }
@@ -214,12 +213,6 @@ public class Level4 extends State {
             appleIsTouched = true;
             sheep.increaseSpd();
             sheep.startTimer();
-        }
-    }
-
-    public void changeLevels(){
-        if (sheep.getPosition().x > 3000){
-            gsm.set(new Level5(gsm));
         }
     }
 

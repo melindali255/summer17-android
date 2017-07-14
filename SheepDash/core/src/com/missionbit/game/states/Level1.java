@@ -21,7 +21,6 @@ public class Level1 extends State{
     private Texture appleTexture;
     private Obstacle apple;
     private boolean appleIsTouched;
-
     private Barrel barrel;
     private Cherry cherry;
     private Poop poop;
@@ -52,6 +51,7 @@ public class Level1 extends State{
     private static final int POOP_WIDTH = 30;
     private static final int BARREL_SPACING = 400;
     private static final int BARREL_WIDTH = 100;
+    long startTime;
 
     public Level1(GameStateManager gsm) {
         super(gsm);
@@ -83,12 +83,15 @@ public class Level1 extends State{
         shedPos = new Vector2(350,0);
         bgPos1 = new Vector2(cam.position.x - cam.viewportWidth/2,0);
         bgPos2 = new Vector2(background.getWidth()+bgPos1.x,0);
+        startTime = System.currentTimeMillis();
     }
 
     @Override
     protected void handleInput() {
-        if (Gdx.input.justTouched()){
-            sheep.jump();
+        if(sheep.getPosition().y ==60) {
+            if (Gdx.input.justTouched()) {
+                sheep.jump();
+            }
         }
     }
 
@@ -112,14 +115,20 @@ public class Level1 extends State{
         updateBarrels();
         updateCherrys();
         updatePoops();
-        collisionCheck2();
+        collisionCheck();
         timerCheck(dt);
-        changeLevels();
         cam.update();
-
+        if (((System.currentTimeMillis() - startTime) > 30000 & farmer.collides(sheep.getBounds1()) == false)){
+            gsm.set(new Level2(gsm));
+        }
     }
 
-    public void collisionCheck2(){
+    public void collisionCheck(){
+        if (farmer.collides(sheep.getBounds1())) {
+            sheep.getSheepDead();
+            sheep.sheepDied();
+            farmer.killedSheep();
+        }
         if (poop.collides(sheep.getBounds1())){
             sheep.reduceSpd();
             sheep.startTimer();
@@ -127,6 +136,14 @@ public class Level1 extends State{
             System.out.println(poop.getBoundsPoop());
         }
         if (cherry.collides(sheep.getBounds1())){
+            sheep.increaseSpd();
+            sheep.startTimer();
+        }
+        if (haybale.collides((sheep.getBounds1()))) {
+            sheep.reduceSpd();
+            sheep.startTimer();
+        }
+        if (apple.collides(sheep.getBounds1())) {
             sheep.increaseSpd();
             sheep.startTimer();
         }
@@ -180,12 +197,6 @@ public class Level1 extends State{
             groundPos2.add(2*ground.getWidth(),0);
         }
 
-    }
-
-    public void changeLevels(){
-        if (sheep.getPosition().x > 3000){
-            gsm.set(new Level2(gsm));
-        }
     }
 
     public void updateTrees() {
